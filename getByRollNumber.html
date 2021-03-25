@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<script src='jquery/jquery-3.5.1.min.js'></script>
+<link rel='stylesheet' type='text/css' href='css/home.css'>
+<script>
+class StudentService
+{
+getByStudentRoll(rollNumber)
+{
+var promise=new Promise(function(resolve,reject){
+$.ajax({
+type:"GET",
+url:"schoolservices/studentservice/getby",
+data:{roll:rollNumber},
+success:function(data){
+resolve(data);
+},
+failure:function(data){
+reject(data);
+}
+});
+});
+return promise;
+}
+}
+
+$(()=>{
+$("button").click(function(){
+var rollNumber=$("#rl").val();
+var studentService=new StudentService();
+studentService.getByStudentRoll(rollNumber).then(function(result){
+alert(result);
+},function(error){
+alert(error);
+});
+});
+});
+
+</script>
+
+</head>
+<body>
+<div class='heading'>
+<h1>KMSS School,Ujjain(M.P)<h1>
+<a href="addStudent.html">Add student</a>
+<a href="editStudent.html">Edit student</a>
+<a href="deleteStudent.html" >Delete student</a>
+<a href="students.html">Display student</a>
+<b>Search student</b>
+</div>
+<div class='page-title'>
+Student (search module)
+</div>
+
+<table class='form'>
+<tr>
+<td>Roll Number</td>
+<td><input type='text' name='rl' id='rl'></td>
+</tr>
+<tr>
+<td colspan='2'><button type='button' style='width:100px;font-size:20px;'>Search</button></td>
+</tr>
+</table>
+</body>
+</html>
