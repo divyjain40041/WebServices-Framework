@@ -392,3 +392,56 @@ System.out.println("Populate students!");
 }
 ```
 ##### Note: You are not supposed to apply Path annotation with startup annotation. you cannot use RequestScope or SessionScope as a parameter. you can only use ApplicationScope as a parameter.
+
+# Serivce Exeptions:
+
+Here are some exceptions which may get occur if user do some mistake.
+
+|S.No.|Exception|Description|
+| -------- | ------- | --------- |
+|1.|ServicePackagePrefixException         |No such package exists, which contains the value mentioned against SERVICE_PACKAGE_PREFIX in web.xml as a prefix.|
+|2.|RequestTypeConflictException | You could not use both @GET and @Post annotations at a time on a single method or class.|
+|3.|LeaningOnPathException | You did not implement the @Path annotation with one of the following annotations @GET,@ POST, @Forward ,@InjectSessionScope ,@InjectRequestScope,@InjectApplicationScope ,@InjectApplicationDirectoryScope ,@SecuredAccess|
+|4.|LeaningOnRequestTypeException|You did not implement the @GET or @POST annotation with one of the following annotations @Forward ,@SecuredAccess.|
+|5.|OnStartupException|You cannot implement @OnStartup annotation along with other annotations present in the WebServicesFramework.|
+|6.|IllegalInjectRequestParameterException|You cannot apply @InjectRequestParameter annotation with data types other than primitive and java.lang.String.|
+|7.|ExcessParameterTypeException|You cannot use more than one complex data type {except :java.lang.String,ApplicationScope,RequestScope,SessionScope,ApplicationDirectory} in single function over which @Path annotation is applied.|
+|8.|ClassInstantiationException|The instantiation can fail for a variety of reasons including but not limited to:(i) the class object represents an abstract class, an interface, an array class, a primitive type,or void.(ii) the class has no nullary constructor.|
+|9.|InvalidURLRequestException|This exception occurs when you request some URL and it is not found.|
+|10.|IllegalMethodException|This exception occurs when you try to access resources through a method that is not allowed on that resource.|
+|11.|IllegalGaurdParameterException|This exception occurs when your gaurd method has parameters other than {ApplicationScope, SessionScope, RequestScope, ApplicationDirectory}.|
+|12.|IllegalServiceAccessException|An IllegalAccessException is thrown when an application tries to reflectively create an instance (other than an array), set or get a field, or invoke a method, but the currently executing method does not have access to the definition of the specified class, field, method or constructor.|
+|13.| InvalidNumberOfParameterException|Method to which request has been forwarded has either 0 parameter or more than one parameters|
+
+
+# Advance features:
+## To dynamically generate JavaScript file:-
+1) You required to add two more param-name in web.xml as shown below.
+
+```
+<context-param>
+<param-name>JS_FILE</param-name>
+<param-value>studentJS</param-value>
+</context-param>
+
+<context-param>
+<param-name>BASE_URL</param-name>
+<param-value>/schoolservices</param-value>
+</context-param>
+```
+* You need to specify the name for the dynamically generated js file as param-value of param-name "JS_FILE"
+* The second param-name is BASE_URL_PATTERN in which you have to set the same URL pattern as you set previously.
+
+## To generate PDF for structure of service and POJO classes:
+Framework has tool name ServiceDOC to generate PDF. 
+
+package name: com.thinking.machines.tools.ServiceDOC You have to pass two things as command line argument
+
+First argument : Path where pdf will be saved.
+Second arguement : The Path to the folder where package exists
+
+If you are in some pqr folder currently, Then you need to write:
+```
+java -classpath c:\tomcat9\webapps\Web_Services\WEB-INF\lib;c:\tomcat9\webapps\Web_Services\WEB-INF\classes;c:\tomcat9\lib\*;. ServiceDOC <First argument> <Second argument>
+```
+Then pdf will be created in current folder.
