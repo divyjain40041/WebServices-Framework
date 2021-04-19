@@ -51,7 +51,6 @@ Now the web.xml has been configured.
 User has to apply different types of annotations which is in framework according to need.By applying this simple annotation user get free from work of making servlets.The user has to follow the guidelines regarding each annotation mentioned below. If user does not follows the guidelines then ServiceException is raised.
 
 ## Annotations:
-
 #### 1. @Path("/studentservice")
 Path annotation can be applied on class and method. The value of this annotation should always starts with front Slash("/") followed by path.
 
@@ -69,7 +68,7 @@ System.out.println("Student added!");
 ```
 user can access this service by sending request to "User's entity name"/studentservice/add.
 
-#### 2. @Get
+#### 2. @GET
 Get annotation can be applied to both class and method.By using this annotation user is declaring that only GET type request allowed for this service.If this annotation is applied on class then all the services inside that class can only accept GET type request.
 
 Applying @GET annotation over class
@@ -99,7 +98,7 @@ System.out.println("Student detail!");
 }
 }
 ```
-##### 3. @Post
+##### 3. @POST
 Similarly as Get annotation, Post annotation can be used for allowing POST type request. and it can also applied on both class and method.
 
 Applying @POST annotation over class
@@ -169,7 +168,29 @@ public Student getByStudentRoll(@RequestParameter(requestParameterKey="roll")int
 }
 ```
 
-#### 5. @Forward("/school/detail")
+#### 5. @InjectRequestParameter("<>")
+
+This annotation is same as @RequestParameter annotation but unlike it only apply on class properties.It work similar as @RequestParameter but benefit of using this annotation is that if some data is arriving through query string and more than one service required that same data then instead of using applying @RequestParameter annotation on each services user can use @InjectRequestParameter annotation on that field, which is accessible to all services.
+
+```
+import com.thinking.machines.webrock.annotations.*;
+@Path("/studentservice")
+public class StudentService
+{
+@InjectRequestParameter("roll_number")
+private int rollNumber;
+@Path("/getByRollNumber")
+public Student getByRollNumber()
+{
+int rollNumber=this.rollNumber;
+Student student=getStudent(rollNumber);
+return student;
+}
+}
+```
+
+
+#### 6. @Forward("/school/detail")
 Using this annotation user can forward request to another web service or to some client side technology like (jsp file/ html file) .The example below shows, How to use forward annotaton to forward request to other service "/school/view",you can also forward to some JSP also.by giving JSP file name as value of forward annotation. Forward annotation can only be applied on Services(Method which has path annotation applied on it).
 
 ```
@@ -186,7 +207,7 @@ System.out.println("School detail");
 }
 ```
 
-#### 6. @SecuredAccess(checkPost="bobby.test.secureaccess",guard="authenticateUser")
+#### 7. @SecuredAccess(checkPost="bobby.test.secureaccess",guard="authenticateUser")
 
 By using this annotation user dont have to write verification code for every service that need to be secured,user can just apply this annotation to all the services that are needed to be secured from unidentified access. SecuredAccess annotation can only be applied on Service/Method.
 
@@ -224,11 +245,11 @@ public File getDirectory(); - for getting application directory.
 
 For all the three classes there are three annotations:
 
-#### 7. @InjectApplicationScope
+#### 8. @InjectApplicationScope
 
-#### 8. @InjectSessionScope
+#### 9. @InjectSessionScope
 
-#### 9. @InjectRequestScope
+#### 10. @InjectRequestScope
 
 ```
 package bobby.scope.example;
@@ -263,7 +284,7 @@ this.applicationScope=applicationScope;
 
 The class ScopeExample requires application scope. For that, the user has to declare a field of type ApplicationScope along with the setter method as shown in the above code. Whenever there is a request arrived for sam, then before the invocation of sam service the setApplicationScope method got invoked.
 
-#### Note: All this three class are in package : com.thinking.machines.webrock.pojo.*;
+##### Note: All this three class are in package : com.thinking.machines.webrock.pojo.*;
 
 There is also a alternative approach to write that code. Instead of applying the InjectApplicationScope on that class you can simply introduce one more parameter in sam method of type Application Scope, As shown below in code.
 
@@ -284,14 +305,13 @@ applicationScope.setAttribute("stduent_info",this.student);
 ```
 Similarly, The code can be written for RequestScope & SessionScope.
 
-#### 10.@InjectApplicationDirectory
+#### 11.@InjectApplicationDirectory
 
-If you wanted to get the working directory of your project then you have to apply this annotation on class. The class should contain a field of type ApplicationDirectory & the necessary setter method. The way of writing code is as same as the above code.
+If you want to get the working directory of your project then you have to apply this annotation on class. The class should contain a field of type ApplicationDirectory and the setter method for this.The way of writing code is as same as the above code.
 
 The Class ApplicationDirectory has only one method:
 
- * File getDirectory();
-
+*File getDirectory();
 ```
 package bobby.scope.example;
 import com.thinking.machines.webrock.annotations.*;
@@ -305,15 +325,14 @@ public void setApplicationDirectory(ApplicationDirectory applicationDirectory)
 this.applicationDirectory=applicationDirectory;
 }
 @Path("/app_directory")
-public void showApplicationDirectory()
+public void displayDirectory()
 {
 System.out.println("Current Directory is "+this.applicationDirectory.getRealPath());
 }
 }
 ```
+                     or
 
-                                or
-                                
 ```
 package bobby.scope.example;
 import com.thinking.machines.webrock.annotations.*;
@@ -321,13 +340,55 @@ import com.thinking.machines.webrock.pojo.*;
 public class ScopeExample
 {
 @Path("/app_directory")
-public void showApplicationDirectory(ApplicationDirectory applicationDirectory)
+public void displayDirectory(ApplicationDirectory applicationDirectory)
 {
-System.out.println("Current Directory is "+this.applicationDirectory.getRealPath());
+System.out.println("Current Directory is"+this.applicationDirectory.getRealPath());
 }
 }
 ```
 
-##### 11. @InjectRequestParameter("gender")
+#### 12. @AutoWired(name="<property_name>")
 
-This annotation is same as @RequestParameter annotation but it applied on class properties. It work similar to @RequestParameter but benefit of using this annotation is that if some data is arriving through query string and more than one service required that same data then instead of applying @RequestParameter annotation on each services user can use InjectRequestParameter on that field, which is accessible to all services.
+AutoWired annotation can only be applied on properties of a service class. User apply these annotation when he/she wants that the value against 'name' property of AutoWired annotation should setted to that property on which annotation applied and value will be extracted from scopes (request scope > session scope > application scope). Setter method should be present for that property so that value can be setted.
+
+i.e. order of finding the value against value of name field of annotation was - Request scope -> Session scope -> Application scope.
+
+```
+import com.thinking.machines.webrock.annotations.*;
+@Path("/studentservice")
+public class Student
+{
+@AutoWired(name="student_name")
+String name;
+public void setName(String name)
+{
+this.name=name;
+}
+@Path("/get")
+public String getName()
+{
+System.out.print("Name of student: ");
+System.out.println(this.name);
+return this.name;
+}
+}
+```
+
+#### 13. @OnStartup(priority=1)
+
+If you wanted to invoke the service when the server get started then you can apply this annotation on that service. This annotation can only be applied on method/service. If user wants to invoke more than one service at startup of server then he should mention the priority of invocation of services. Service with lesser priority number will be called first.
+
+```
+package bobby.scope.example;
+import com.thinking.machines.webrock.annotations.*;
+import com.thinking.machines.webrock.pojo.*;
+public class StudentDS
+{
+@Startup(PRIORITY=1)
+public void populateStudents()
+{
+System.out.println("Populate students!");
+}
+}
+```
+##### Note: You are not supposed to apply Path annotation with startup annotation. you cannot use RequestScope or SessionScope as a parameter. you can only use ApplicationScope as a parameter.
