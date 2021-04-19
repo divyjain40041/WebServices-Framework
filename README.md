@@ -284,3 +284,50 @@ applicationScope.setAttribute("stduent_info",this.student);
 ```
 Similarly, The code can be written for RequestScope & SessionScope.
 
+#### 10.@InjectApplicationDirectory
+
+If you wanted to get the working directory of your project then you have to apply this annotation on class. The class should contain a field of type ApplicationDirectory & the necessary setter method. The way of writing code is as same as the above code.
+
+The Class ApplicationDirectory has only one method:
+
+ * File getDirectory();
+
+```
+package bobby.scope.example;
+import com.thinking.machines.webrock.annotations.*;
+import com.thinking.machines.webrock.pojo.*;
+@InjectApplicationDirectory
+public class ScopeExample
+{
+ApplicationDirectory applicationDirectory;
+public void setApplicationDirectory(ApplicationDirectory applicationDirectory)
+{
+this.applicationDirectory=applicationDirectory;
+}
+@Path("/app_directory")
+public void showApplicationDirectory()
+{
+System.out.println("Current Directory is "+this.applicationDirectory.getRealPath());
+}
+}
+```
+
+                                or
+                                
+```
+package bobby.scope.example;
+import com.thinking.machines.webrock.annotations.*;
+import com.thinking.machines.webrock.pojo.*;
+public class ScopeExample
+{
+@Path("/app_directory")
+public void showApplicationDirectory(ApplicationDirectory applicationDirectory)
+{
+System.out.println("Current Directory is "+this.applicationDirectory.getRealPath());
+}
+}
+```
+
+##### 11. @InjectRequestParameter("gender")
+
+This annotation is same as @RequestParameter annotation but it applied on class properties. It work similar to @RequestParameter but benefit of using this annotation is that if some data is arriving through query string and more than one service required that same data then instead of applying @RequestParameter annotation on each services user can use InjectRequestParameter on that field, which is accessible to all services.
